@@ -138,6 +138,12 @@ class FilmController extends Controller
     //Crear película
     public function createFilm(Request $request)
     {
+        if (self::isFilm($request->input('name'))) {
+            return redirect()->back()
+                ->withErrors(['name' => 'El nombre de la película ya existe.'])
+                ->withInput(); // <-- Mantener los datos del formulario
+        }
+
         $films = FilmController::readFilms();
 
         $newFilm = array(

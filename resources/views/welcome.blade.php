@@ -78,10 +78,14 @@
                         <div class="alert alert-danger">{{ $status }}</div>
                     @endif
                     <form action="{{ route('createFilm') }}" method="POST">
-                        @csrf
+                    {{ csrf_field() }}
                         <div class="mb-3">
                             <label for="name" class="form-label">Nombre:</label>
-                            <input type="text" name="name" class="form-control" required>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                            value="{{ old('name') }}" required>
+                            @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="year" class="form-label">Año:</label>
