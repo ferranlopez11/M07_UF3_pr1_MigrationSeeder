@@ -110,6 +110,13 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label for="storage_type" class="form-label">Guardar registro en:</label>
+                            <select name="storage_type" class="form-control" required>
+                                <option value="json">JSON</option>
+                                <option value="db">Base de Datos</option>
+                            </select>
+                        </div><br>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-custom">Registrar Película</button>
                         </div>
