@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+
 
 class FilmController extends Controller
 {
@@ -11,8 +13,18 @@ class FilmController extends Controller
      * Read films from storage
      */
     public static function readFilms(): array {
-        $films = Storage::json('/public/films.json');
-        return $films;
+        /*$films = Storage::json('/public/films.json');
+        return $films;*/
+
+        $filmsFromJson = Storage::exists('/public/films.json')
+            ? Storage::json('/public/films.json')
+            : [];
+ 
+        $filmsFromDB = DB::table('films')->get()->map(function ($film) {
+            return (array) $film;
+        })->toArray();
+ 
+        return array_merge($filmsFromJson, $filmsFromDB);
     }
     /**
      * List films older than input year 
