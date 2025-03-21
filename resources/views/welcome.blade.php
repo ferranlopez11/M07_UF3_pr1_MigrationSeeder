@@ -64,6 +64,15 @@
                     <li>
                         <a class="nav-link" href="/filmout/filmsByGenre">Pelis por Género</a>
                     </li>
+                    <li>
+                        <a class="nav-link" href="/actorout/actors">Todos los Actores</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/actorout/listActorsByDecade">Actores por década</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/actorout/countActors">Contar Actores</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -120,12 +129,25 @@
                         <div class="d-grid">
                             <button type="submit" class="btn btn-custom">Registrar Película</button>
                         </div>
+                    </form><br>
+                    <form id="decadeForm" method="GET">
+                        <label for="decade" class="form-label">Selecciona una década:</label>
+                        <select id="decade" name="year" class="form-select">
+                            @for ($year = 1970; $year <= 2020; $year += 10)
+                            <option value="{{ $year }}">{{ $year }} - {{ $year + 9 }}</option>
+                            @endfor
+                        </select>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
+    <script>
+    document.getElementById('decade').addEventListener('change', function() {
+        const selectedYear = this.value;
+        window.location.href = "{{ url('/actorout/listActorsByDecade') }}/" + selectedYear;
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
