@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Actor;
+use Illuminate\Http\JsonResponse;
 
 class ActorController extends Controller
 {
@@ -35,5 +36,25 @@ class ActorController extends Controller
         return view('actors.count', compact('actorCount'));
     }
 
+    public function destroy($id): JsonResponse
+    {
+        $actor = Actor::find($id);
+
+        if (!$actor) {
+            return response()->json([
+                'action' => 'delete',
+                'status' => false,
+                'message' => 'Actor not found'
+            ], 404);
+        }
+
+        $actor->delete();
+
+        return response()->json([
+            'action' => 'delete',
+            'status' => true,
+            'message' => 'Actor deleted successfully'
+        ], 200);
+    }
 
 }
