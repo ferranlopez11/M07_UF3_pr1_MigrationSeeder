@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+
 
 class FilmController extends Controller
 {
@@ -11,8 +13,18 @@ class FilmController extends Controller
      * Read films from storage
      */
     public static function readFilms(): array {
-        $films = Storage::json('/public/films.json');
-        return $films;
+        /*$films = Storage::json('/public/films.json');
+        return $films;*/
+
+        $filmsFromJson = Storage::exists('/public/films.json')
+            ? Storage::json('/public/films.json')
+            : [];
+ 
+        $filmsFromDB = DB::table('films')->get()->map(function ($film) {
+            return (array) $film;
+        })->toArray();
+ 
+        return array_merge($filmsFromJson, $filmsFromDB);
     }
     /**
      * List films older than input year 
@@ -138,39 +150,46 @@ class FilmController extends Controller
     //Crear película
     public function createFilm(Request $request)
     {
-        if (self::isFilm($request->input('name'))) {
-            return redirect()->back()
-                ->withErrors(['name' => 'El nombre de la película ya existe.'])
-                ->withInput(); // <-- Mantener los datos del formulario
-        }
 
-        $films = FilmController::readFilms();
-
-        $newFilm = array(
+        $request->validate([
+            'name' => 'required|string',
+            'year' => 'required|integer',
+            'genre' => 'required|string',
+            'country' => 'required|string',
+            'duration' => 'required|integer',
+            'img_url' => 'required|url',
+            'storage_type' => 'required|in:json,db',
+        ]);
+    
+        $newFilm = [
             'name' => $request->input('name'),
             'year' => $request->input('year'),
             'genre' => $request->input('genre'),
             'country' => $request->input('country'),
             'duration' => $request->input('duration'),
-            'img_url' => $request->input('img_url')
-        );
-
-        if(!FilmController::isFilm($newFilm['name'])){
-            $films[] = $newFilm;
-            $status = Storage::put('/public/films.json', json_encode($films));
+            'img_url' => $request->input('img_url'),
+        ];
+    
+        if ($request->input('storage_type') === 'json') {
+            $films = Storage::exists('/public/films.json') ? Storage::json('/public/films.json') : [];
             
-            if ($status) {
-                return redirect()->action('App\Http\Controllers\FilmController@listFilms');
-            } else {
-                return redirect()->back()
-                ->with("status", "Error al añadir película")
-                ->withInput();
+            if (FilmController::isFilm($newFilm['name'])) {
+                return redirect()->back()->withErrors(['name' => 'La película ya existe en JSON.'])->withInput();
             }
+    
+            $films[] = $newFilm;
+            Storage::put('/public/films.json', json_encode($films));
+    
         } else {
-            return redirect()->back()
-            ->withErrors(['name' => 'La película ya existe'])
-            ->withInput();
+            if (DB::table('films')->where('name', $newFilm['name'])->exists()) {
+                return redirect()->back()->withErrors(['name' => 'La película ya existe en la base de datos.'])->withInput();
+            }
+    
+            DB::table('films')->insert($newFilm);
         }
+    
+        return redirect()->action([FilmController::class, 'listFilms']);
+
     }
     
     private static function isFilm($filmName): bool
@@ -182,7 +201,7 @@ class FilmController extends Controller
                 return true;
             }
         }
-        return false;
+        return DB::table('films')->whereRaw('LOWER(name) = ?', [strtolower($filmName)])->exists();
     }
 
 
