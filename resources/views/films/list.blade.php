@@ -36,20 +36,29 @@
                 <table class="table table-custom table-hover">
                     <thead class="table-dark">
                         <tr>
-                            @foreach(array_keys($films[0]) as $key)
-                                <th>{{ ucfirst($key) }}</th>
-                            @endforeach
+                            <th>Nombre</th>
+                            <th>Año</th>
+                            <th>Género</th>
+                            <th>País</th>
+                            <th>Duración</th>
+                            <th>Imagen</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($films as $film)
                             <tr>
-                                <td>{{ $film['name'] }}</td>
-                                <td>{{ $film['year'] }}</td>
-                                <td>{{ $film['genre'] }}</td>
-                                <td>{{ $film['country'] }}</td>
-                                <td>{{ $film['duration'] }} minutos</td>
-                                <td><img src="{{ $film['img_url'] }}" class="img-thumbnail" alt="{{ $film['name'] }}"></td>
+                                <td>{{ $film['name'] ?? 'Desconocido' }}</td>
+                                <td>{{ $film['year'] ?? '-' }}</td>
+                                <td>{{ $film['genre'] ?? '-' }}</td>
+                                <td>{{ $film['country'] ?? '-' }}</td>
+                                <td>{{ $film['duration'] ?? '-' }} minutos</td>
+                                <td>
+                                    @if(!empty($film['img_url']) && filter_var($film['img_url'], FILTER_VALIDATE_URL))
+                                        <img src="{{ $film['img_url'] }}" class="img-thumbnail" alt="{{ $film['name'] }}">
+                                    @else
+                                        <span class="text-muted">No disponible</span>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
