@@ -22,7 +22,9 @@ class ActorController extends Controller
         $startYear = (int) $year;
         $endYear = $startYear + 9;
 
-        $actors = Actor::whereBetween('birthdate', ["$startYear-01-01", "$endYear-12-31"])->get();
+        $actors = Actor::whereYear('birthdate', '>=', $startYear)
+                       ->whereYear('birthdate', '<=', $endYear)
+                       ->get();
 
         return view('actors.index', [
             'title' => "Actores nacidos en la década de $startYear",
