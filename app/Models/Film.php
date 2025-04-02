@@ -12,4 +12,6 @@ class Film extends Model
     protected $table = 'films';
 
     public $timestamps = false;
+
+    protected $fillable = ['name', 'year', 'genre', 'country', 'duration', 'img_url'];
 }
