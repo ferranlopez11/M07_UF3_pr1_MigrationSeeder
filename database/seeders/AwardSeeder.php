@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
 
-class awards extends Seeder
+class AwardSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -9,9 +9,10 @@ class Film extends Model
 {
     use HasFactory;
 
-    protected $table = 'films';
-
-    public $timestamps = false;
-
     protected $fillable = ['name', 'year', 'genre', 'country', 'duration', 'img_url'];
+
+    public function actors()
+    {
+        return $this->belongsToMany(Actor::class, 'films_actors');
+    }
 }
